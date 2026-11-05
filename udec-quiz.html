@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ruta saludable</title>
+<!-- WIDGET 2 · RUTA SALUDABLE: QUIZ (Módulo 8) — Cartilla de Karen Daniela Urrego Silva · Universidad de Cundinamarca -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{--g:#00482B;--g2:#0b6b43;--y:#FBE122;--dark:#2D2D2D;--mint:#EAF2EE;--line:#D5E3DB;--muted:#56645C;--ok:#1f9d55;--okbg:#e3f5ea;--bad:#d7263d;--badbg:#fde6e9}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#fff;color:var(--dark);font-family:"Century Gothic","Montserrat","Segoe UI",Arial,sans-serif;font-size:15px;line-height:1.45}
+  .wrap{padding:14px 16px;display:flex;flex-direction:column;gap:12px;max-width:940px;margin:auto}
+  h1{margin:0;font-size:22px;font-weight:800;color:var(--g)}
+  .sub{margin:0;color:var(--muted);font-size:13.5px}
+  .map{background:var(--g);border-radius:16px;padding:8px 10px;position:relative}
+  .map svg{width:100%;height:auto;display:block}
+  .hud{position:absolute;right:14px;top:10px;background:var(--y);color:var(--dark);font-weight:800;border-radius:999px;padding:4px 12px;font-size:13px}
+  .card{border:2px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .tag{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--g2)}
+  .q{font-size:19px;font-weight:800;margin:0}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{all:unset;cursor:pointer;border:2px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:center}
+  .opt .l{flex:none;width:26px;height:26px;border-radius:50%;background:var(--mint);display:grid;place-items:center;font-weight:800;color:var(--g)}
+  .opt:hover:not([disabled]){border-color:var(--g);background:var(--mint)}
+  .opt[disabled]{cursor:default}
+  .opt.ok{background:var(--okbg);border-color:var(--ok)}.opt.ko{background:var(--badbg);border-color:var(--bad)}.opt.dim{opacity:.4}
+  .fb{border-radius:12px;padding:10px 13px;border-left:6px solid}
+  .fb.ok{background:var(--okbg);border-color:var(--ok)}.fb.ko{background:var(--badbg);border-color:var(--bad)}
+  .btn{all:unset;cursor:pointer;background:var(--g);color:#fff;font-weight:800;border-radius:999px;padding:10px 20px;align-self:flex-start;box-shadow:0 3px 0 #002a19}
+  .btn.y{background:var(--y);color:var(--dark);box-shadow:0 3px 0 #c9b200}
+  .opt:focus-visible,.btn:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+  .res{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .big{font-size:52px;font-weight:800;color:var(--g);line-height:1}
+  .walker{transition:transform .9s cubic-bezier(.4,1.4,.5,1)}
+  .cp{transition:fill .4s}
+  .cf{position:fixed;top:-12px;width:9px;height:14px;border-radius:2px;z-index:99;pointer-events:none;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+  .bob{animation:bob .6s ease-in-out infinite}
+  @media (prefers-reduced-motion:reduce){.walker{transition:none}.bob,.cf{animation:none}}
+</style></head><body>
+<div class="wrap">
+  <div><h1>Ruta saludable</h1><p class="sub">Cada respuesta correcta te hace avanzar a la siguiente estación. ¡Completa la ruta!</p></div>
+  <div class="map" aria-hidden="true"><span class="hud" id="hud">0 / 10 estaciones</span><svg id="svg" viewBox="0 0 900 170"></svg></div>
+  <div class="card" id="card"></div>
+</div>
+<script>
+const Q=[
+ ["¿Cuáles son los tres valores olímpicos que promueve el COI?",["Fuerza, velocidad y resistencia","Excelencia, respeto y amistad","Disciplina, éxito y honor"],1,"El Olimpismo se resume en excelencia, respeto y amistad."],
+ ["La recreación se diferencia del deporte de competencia principalmente porque…",["Busca siempre ganar un título","Se practica de forma voluntaria en el tiempo libre buscando bienestar y disfrute","Solo la pueden practicar deportistas federados"],1,"La recreación es voluntaria, ocurre en el tiempo libre y busca disfrute, bienestar y desarrollo personal."],
+ ["Según la OMS, ¿cuánta actividad física moderada se recomienda a los adultos a la semana?",["Al menos 30 minutos","Entre 150 y 300 minutos","Al menos 10 horas al día"],1,"Las directrices de la OMS (2020) recomiendan entre 150 y 300 minutos semanales de actividad física moderada para adultos."],
+ ["Una revisión de alcance (scoping review), como la de la ponencia del EFIDAFI 2026, sirve principalmente para…",["Probar la eficacia de un tratamiento con un experimento","Mapear lo que se ha investigado sobre un tema: conceptos, métodos y vacíos","Contar una experiencia personal"],1,"Una revisión de alcance identifica y organiza la producción científica sobre un tema para ver qué se sabe y qué falta investigar."],
+ ["Un recreador adapta el juego para que un adulto mayor con poca movilidad pueda participar. ¿Qué valor aplica?",["Excelencia","Respeto","Velocidad"],1,"Respetar las capacidades de cada persona e incluirla es parte del valor del respeto."],
+ ["Una monitora mantiene la calma cuando un participante le grita durante una actividad. Está usando…",["Inteligencia emocional","Competitividad","Fuerza"],0,"Reconocer y regular las propias emociones es inteligencia emocional."],
+ ["Llueve y la caminata ecológica no se puede hacer. Organizar juegos en un espacio cubierto es un ejemplo de…",["Resolución de problemas","Amistad","Excelencia técnica"],0,"Se mantiene el objetivo (moverse y disfrutar) cambiando el medio: resolución de problemas."],
+ ["Formar “líderes de pausa activa” entre los estudiantes desarrolla sobre todo…",["Liderazgo","Individualismo","Velocidad de reacción"],0,"Dar a los estudiantes el rol de guiar a su grupo desarrolla liderazgo."],
+ ["La ciclovía dominical, donde la comunidad camina, trota y monta bicicleta, se relaciona con la dimensión…",["Naturaleza","Sociedad","Aula"],1,"Es un espacio que une a la comunidad alrededor de la actividad física: dimensión sociedad."],
+ ["Un festival de juegos tradicionales entre dos barrios fortalece principalmente…",["La amistad","La excelencia individual","La competencia por premios"],0,"Unir comunidades a través del juego es el valor de la amistad."]
+];
+const L="ABC";let i=0,sc=0;const $=id=>document.getElementById(id);
+/* mapa: 11 puntos (salida + 10 estaciones) sobre un camino */
+const P=[];for(let k=0;k<=10;k++){const x=40+k*82;const y=85+Math.sin(k*0.9)*45;P.push([x,y])}
+function drawMap(){let d="M"+P.map(p=>p.join(" ")).join(" L");let g=`<path d="${d}" fill="none" stroke="#0b6b43" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#FBE122" stroke-width="3" stroke-dasharray="8 10" stroke-linecap="round"/>`;
+  const trees=[[120,30],[300,150],[470,25],[640,150],[800,30],[220,160],[560,20]];trees.forEach(t=>g+=`<circle cx="${t[0]}" cy="${t[1]}" r="11" fill="#0f7a4a"/><rect x="${t[0]-2}" y="${t[1]+8}" width="4" height="8" fill="#5b3a1e"/>`);
+  P.forEach((p,k)=>{if(k===0){g+=`<text x="${p[0]}" y="${p[1]+34}" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" font-family="Montserrat,Arial">SALIDA</text>`;return}
+    g+=`<circle class="cp" id="cp${k}" cx="${p[0]}" cy="${p[1]}" r="13" fill="${k<=sc?"#FBE122":"#fff"}" stroke="#00482B" stroke-width="3"/><text x="${p[0]}" y="${p[1]+4.5}" text-anchor="middle" font-size="12" font-weight="800" fill="#00482B" font-family="Montserrat,Arial">${k===10?"★":k}</text>`});
+  g+=`<g class="walker" id="walker" transform="translate(${P[sc][0]},${P[sc][1]-30})"><g class="bob"><circle cx="0" cy="-6" r="7" fill="#F2C29B" stroke="#00482B" stroke-width="2"/><path d="M-8 2 Q0 -2 8 2 L6 16 H-6 Z" fill="#FBE122" stroke="#00482B" stroke-width="2"/><path d="M-4 16 L-6 26 M4 16 L7 26" stroke="#00482B" stroke-width="3" stroke-linecap="round"/></g></g>`;
+  $("svg").innerHTML=g;$("hud").textContent=`${sc} / 10 estaciones`}
+function move(){const w=$("walker");if(w)w.setAttribute("transform",`translate(${P[sc][0]},${P[sc][1]-30})`);const c=$("cp"+sc);if(c)c.setAttribute("fill","#FBE122");$("hud").textContent=`${sc} / 10 estaciones`}
+function confetti(n){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const C=["#00482B","#FBE122","#d7263d","#4bb4e6","#fff"];for(let k=0;k<n;k++){const d=document.createElement("i");d.className="cf";d.style.left=Math.random()*100+"vw";d.style.background=C[k%5];d.style.animationDuration=(1.3+Math.random()*1.5)+"s";document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}}
+function show(){const c=$("card");
+  if(i>=Q.length){const nota=(sc/Q.length*10).toFixed(1);try{localStorage.setItem("udec-quiz",nota)}catch(e){}if(sc>=7)confetti(100);
+    c.innerHTML=`<div class="res"><span class="big">${nota}</span><div><b style="font-size:18px;color:var(--g)">${sc>=9?"¡Ruta completa! Excelente.":sc>=7?"¡Muy bien! Llegaste lejos.":sc>=5?"Vas por buen camino; repasa las fallidas.":"Repasa los módulos y vuelve a intentarlo."}</b><p style="margin:2px 0;color:var(--muted)">${sc} de ${Q.length} estaciones · Nota sobre 10</p></div></div><button class="btn y" id="again">Recorrer otra vez</button>`;
+    $("again").onclick=()=>{i=0;sc=0;drawMap();show()};return}
+  const q=Q[i];
+  c.innerHTML=`<span class="tag">Pregunta ${i+1} de ${Q.length}</span><p class="q">${q[0]}</p><div class="opts">${q[1].map((o,j)=>`<button class="opt" data-j="${j}"><span class="l">${L[j]}</span><span>${o}</span></button>`).join("")}</div><div id="fb"></div>`;
+  c.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const j=+b.dataset.j,ok=j===q[2];
+    c.querySelectorAll(".opt").forEach((x,k)=>{x.setAttribute("disabled","");if(k===q[2])x.classList.add("ok");else if(k!==j)x.classList.add("dim")});if(!ok)b.classList.add("ko");
+    if(ok){sc++;move();confetti(25)}
+    $("fb").innerHTML=`<div class="fb ${ok?"ok":"ko"}"><strong>${ok?"¡Correcto! Avanzas una estación.":"Incorrecto. Te quedas en esta estación."}</strong> ${q[3]}</div><button class="btn" id="next" style="margin-top:10px">${i+1<Q.length?"Siguiente pregunta →":"Ver resultado"}</button>`;
+    $("next").onclick=()=>{i++;show()}})}
+drawMap();show();
+</script>
+</body></html>

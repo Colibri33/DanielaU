@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Circuito de valores</title>
+<!-- WIDGET 3 · CIRCUITO DE VALORES: ARRASTRAR Y DECIDIR (Módulo 4) — Cartilla de Karen Daniela Urrego Silva · Universidad de Cundinamarca -->
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{--g:#00482B;--g2:#0b6b43;--y:#FBE122;--dark:#2D2D2D;--mint:#EAF2EE;--line:#D5E3DB;--muted:#56645C;--ok:#1f9d55;--okbg:#e3f5ea;--mid:#c99700;--midbg:#fff6d6;--bad:#d7263d;--badbg:#fde6e9}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#fff;color:var(--dark);font-family:"Century Gothic","Montserrat","Segoe UI",Arial,sans-serif;font-size:14.5px;line-height:1.4}
+  .wrap{padding:12px 16px;display:flex;flex-direction:column;gap:10px;max-width:940px;margin:auto}
+  h1{margin:0;font-size:21px;font-weight:800;color:var(--g)}
+  .sub{margin:0;color:var(--muted);font-size:13px}
+  .tabs{display:flex;gap:6px}
+  .tab{all:unset;cursor:pointer;border-radius:999px;padding:7px 16px;background:var(--mint);font-weight:800;color:var(--g);font-size:13.5px}
+  .tab[aria-selected="true"]{background:var(--g);color:#fff}
+  .circuit{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;position:relative}
+  .st{border:3px dashed var(--line);border-radius:16px;padding:8px;min-height:100px;display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:.15s;background:#fff}
+  .st.over{border-color:var(--y);background:#fffbe0;transform:scale(1.02)}
+  .st h2{margin:0;font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px;color:var(--g)}
+  .st h2 span{width:28px;height:28px;border-radius:50%;background:var(--g);color:var(--y);display:grid;place-items:center;font-size:13px}
+  .pool{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;min-height:50px;border-radius:12px;padding:4px;background:var(--mint)}
+  .pool.over{outline:3px dashed var(--y)}
+  .item{background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px 10px;cursor:grab;user-select:none;touch-action:none;font-size:13px}
+  .item:hover{border-color:var(--g)}
+  .item.sel{border-color:var(--y);box-shadow:0 0 0 3px #fff3a6}
+  .item.ok{background:var(--okbg);border-color:var(--ok)}.item.ko{background:var(--badbg);border-color:var(--bad)}
+  .item .hab{display:none;margin-top:4px;font-size:11px;font-weight:800;color:#fff;background:var(--g2);border-radius:999px;padding:1px 8px;width:max-content}
+  .item.ok .hab{display:block}
+  .item.dragging{opacity:.35}
+  .item:focus-visible,.tab:focus-visible,.btn:focus-visible,.opt:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{all:unset;cursor:pointer;background:var(--g);color:#fff;font-weight:800;border-radius:999px;padding:9px 18px;box-shadow:0 3px 0 #002a19}
+  .btn.alt{background:#fff;color:var(--g);border:2px solid var(--line);box-shadow:none}
+  .msg{font-weight:800}
+  .empty{grid-column:1/-1;color:var(--muted);font-size:13px;margin:4px}
+  .dec{border:2px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+  .q{font-size:17px;font-weight:800;margin:0}
+  .opt{all:unset;cursor:pointer;border:2px solid var(--line);border-radius:12px;padding:9px 12px}
+  .opt:hover:not([disabled]){border-color:var(--g);background:var(--mint)}
+  .opt[disabled]{cursor:default;opacity:.45}
+  .g{background:var(--okbg);border-color:var(--ok)!important;opacity:1!important}.y{background:var(--midbg);border-color:var(--mid)!important;opacity:1!important}.r{background:var(--badbg);border-color:var(--bad)!important;opacity:1!important}
+  .fb{border-radius:10px;padding:9px 12px;background:var(--mint)}
+  .cf{position:fixed;top:-12px;width:9px;height:14px;border-radius:2px;z-index:99;pointer-events:none;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+  [hidden]{display:none!important}
+  @media (max-width:680px){.circuit,.pool{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce){.cf{animation:none}}
+</style></head><body>
+<div class="wrap">
+  <div><h1>Circuito de valores</h1><p class="sub">Lleva cada situación a la estación del valor que representa (arrastra, o toca la tarjeta y luego la estación). Al acertar descubrirás la habilidad que la hace posible.</p></div>
+  <div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="true" data-t="a">1. Relaciona</button><button class="tab" role="tab" aria-selected="false" data-t="b">2. Decide</button></div>
+  <section id="a">
+    <div class="circuit" id="circuit"></div>
+    <div class="pool" id="pool" data-z="" style="margin-top:10px"></div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="check">Revisar</button><button class="btn alt" id="reset">Reiniciar</button><span class="msg" id="msg"></span></div>
+  </section>
+  <section id="b" hidden></section>
+</div>
+<script>
+const V=["Excelencia","Respeto","Amistad"];
+const IT=[
+ ["a","Una instructora de aeróbicos mide el progreso de cada participante y ajusta su rutina.",0,"Resolución de problemas"],
+ ["b","El recreador explica las reglas a un niño con discapacidad auditiva usando señas y dibujos.",1,"Comunicación"],
+ ["c","Dos barrios organizan juntos una jornada de juegos tradicionales.",2,"Trabajo en equipo"],
+ ["d","Un grupo de caminantes recoge la basura del sendero que recorre.",1,"Liderazgo"],
+ ["e","Una estudiante entrena cada semana para mejorar su resistencia en la ciclovía.",0,"Inteligencia emocional"],
+ ["f","Los adultos mayores del club enseñan los pasos de rumba a los nuevos integrantes.",2,"Trabajo en equipo"]
+];
+const DEC=[
+ {p:"En un torneo recreativo, tu equipo podría ganar si sigue jugando mientras una niña del otro equipo llora porque se golpeó.",o:[["Detengo el juego para que la atiendan.","g","Respeto e inteligencia emocional: la salud va antes que el resultado."],["Que siga el juego; el árbitro decidirá.","y","Es reglamentario, pero pierdes la oportunidad de mostrar el valor del respeto."],["Pido al equipo que aproveche.","r","Va contra el respeto y el sentido de la recreación."]]},
+ {p:"En tu grupo de pausas activas, dos compañeros se burlan de quien no coordina bien los movimientos.",o:[["Hablo con ellos, explico por qué afecta al grupo y les doy el rol de ayudar a los demás.","g","Comunicación y liderazgo: conviertes la burla en apoyo."],["Los regaño frente a todos.","y","Pones un límite, pero la exposición pública puede generar más tensión."],["No digo nada; es solo un juego.","r","Normalizas la burla y alguien puede dejar de participar."]]}
+];
+const place={};let sel=null;const $=id=>document.getElementById(id);
+$("circuit").innerHTML=V.map((v,k)=>`<div class="st" data-z="${k}"><h2><span>${k+1}</span>${v}</h2></div>`).join("");
+const card=it=>`<div class="item${sel===it[0]?" sel":""}" tabindex="0" data-id="${it[0]}">${it[1]}<span class="hab">Habilidad: ${it[3]}</span></div>`;
+function draw(){const free=IT.filter(it=>place[it[0]]==null);
+  $("pool").innerHTML=free.length?free.map(card).join(""):`<p class="empty">Todas las situaciones están en el circuito. Pulsa <b>Revisar</b>.</p>`;
+  document.querySelectorAll(".st").forEach(z=>{z.querySelectorAll(".item").forEach(x=>x.remove());IT.filter(it=>place[it[0]]===z.dataset.z).forEach(it=>z.insertAdjacentHTML("beforeend",card(it)))});
+  document.querySelectorAll(".item").forEach(bind)}
+function drop(id,z){if(z==="")delete place[id];else place[id]=z;sel=null;$("msg").textContent="";draw()}
+function bind(el){let moved=false;
+  el.onclick=e=>{e.stopPropagation();if(moved)return;sel=sel===el.dataset.id?null:el.dataset.id;draw()};
+  el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();el.click()}};
+  el.onpointerdown=e=>{if(e.pointerType==="mouse"&&e.button!==0)return;const sx=e.clientX,sy=e.clientY;let gh=null,over=null;moved=false;
+    const mv=ev=>{if(!gh&&Math.hypot(ev.clientX-sx,ev.clientY-sy)<6)return;
+      if(!gh){gh=el.cloneNode(true);Object.assign(gh.style,{position:"fixed",pointerEvents:"none",zIndex:9,width:el.offsetWidth+"px",boxShadow:"0 8px 20px rgba(0,72,43,.3)",transform:"rotate(-2deg)"});document.body.appendChild(gh);el.classList.add("dragging")}
+      gh.style.left=(ev.clientX-el.offsetWidth/2)+"px";gh.style.top=(ev.clientY-18)+"px";window._drag=1;window._dragY=ev.clientY;
+      const t=document.elementFromPoint(ev.clientX,ev.clientY),z=t&&t.closest(".st,.pool");if(over&&over!==z)over.classList.remove("over");over=z;if(z)z.classList.add("over")};
+    const up=()=>{window._drag=0;removeEventListener("pointermove",mv);removeEventListener("pointerup",up);if(!gh)return;gh.remove();el.classList.remove("dragging");moved=true;
+      if(over){over.classList.remove("over");drop(el.dataset.id,over.dataset.z)}};
+    addEventListener("pointermove",mv);addEventListener("pointerup",up)}}
+document.querySelectorAll(".st").forEach(z=>z.onclick=()=>{if(sel)drop(sel,z.dataset.z)});
+$("pool").onclick=()=>{if(sel)drop(sel,"")};
+function confetti(n){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const C=["#00482B","#FBE122","#d7263d","#4bb4e6"];for(let k=0;k<n;k++){const d=document.createElement("i");d.className="cf";d.style.left=Math.random()*100+"vw";d.style.background=C[k%4];d.style.animationDuration=(1.3+Math.random()*1.5)+"s";document.body.appendChild(d);setTimeout(()=>d.remove(),3200)}}
+$("check").onclick=()=>{if(Object.keys(place).length<IT.length){$("msg").textContent="Primero ubica todas las situaciones.";return}
+  let ok=0;IT.forEach(it=>{const g=+place[it[0]]===it[2];ok+=g;document.querySelector(`.item[data-id="${it[0]}"]`).classList.add(g?"ok":"ko")});
+  if(ok===IT.length)confetti(90);
+  $("msg").innerHTML=ok===IT.length?`<span style="color:var(--ok)">¡Circuito completo! ${ok}/${IT.length}. Ahora pasa a “2. Decide”.</span>`:`${ok}/${IT.length} correctas · Mueve las rojas y revisa otra vez.`};
+$("reset").onclick=()=>{for(const k in place)delete place[k];sel=null;$("msg").textContent="";draw()};
+draw();
+$("b").innerHTML=DEC.map((d,i)=>`<div class="dec" data-i="${i}"><span class="sub"><b>Decisión ${i+1}</b></span><p class="q">${d.p}</p>${d.o.map((o,j)=>`<button class="opt" data-j="${j}">${o[0]}</button>`).join("")}<div class="slot"></div></div>`).join("");
+document.querySelectorAll(".dec").forEach(box=>{const d=DEC[+box.dataset.i];box.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const o=d.o[+b.dataset.j];
+  box.querySelectorAll(".opt").forEach(x=>x.setAttribute("disabled",""));b.classList.add(o[1]);
+  box.querySelector(".slot").innerHTML=`<div class="fb"><b>${{g:"Buena decisión.",y:"Decisión a medias.",r:"Decisión a revisar."}[o[1]]}</b> ${o[2]}</div><button class="btn alt" style="margin-top:6px">Intentar de nuevo</button>`;
+  box.querySelector(".slot button").onclick=()=>{box.querySelectorAll(".opt").forEach(x=>{x.removeAttribute("disabled");x.className="opt"});box.querySelector(".slot").innerHTML=""}})});
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));$("a").hidden=t.dataset.t!=="a";$("b").hidden=t.dataset.t!=="b"});
+/* desplazamiento automático al arrastrar cerca de los bordes */
+window._drag=0;window._dragY=0;
+setInterval(()=>{if(!window._drag)return;const y=window._dragY,z=80,h=innerHeight;if(y<z)scrollBy(0,-Math.ceil((z-y)/4));else if(y>h-z)scrollBy(0,Math.ceil((y-(h-z))/4))},16);
+</script>
+</body></html>
